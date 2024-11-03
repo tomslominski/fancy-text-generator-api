@@ -6,19 +6,22 @@
  * @returns {Promise<Response>}
  */
 export default async (request, context) => {
-  console.log(  context.constructor.name );
   const tool = context.params.tool;
 
   if( 'POST' === request.method && ['cursive', 'strikethrough'].includes( tool ) ) {
-    let text = await request.text();
+    let body = await request.json();
 
-    if( 'cursive' === tool ) {
-      text = cursive( text );
-    } else if( 'strikethrough' === tool ) {
-      text = strikethrough( text );
+    if( typeof body.text !== 'undefined' ) {
+      let text = '';
+
+      if( 'cursive' === tool ) {
+        text = cursive( body.text );
+      } else if( 'strikethrough' === tool ) {
+        text = strikethrough( body.text );
+      }
+
+      return new Response( text );
     }
-
-    return new Response( text );
   }
 
   return new Response( null, { status: 500 } );
